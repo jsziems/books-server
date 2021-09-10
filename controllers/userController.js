@@ -1,4 +1,4 @@
-// const express = require('express')
+
 const router = require("express").Router()
 
 const { UserModel } = require('../models')
@@ -39,5 +39,42 @@ router.post("/signup", async (req, res) => {
         }
     }
 });
+
+router.post("/login", async (req, res) => {
+    console.log("in router.post for login")
+
+    let { email, password } = req.body
+
+    try {
+        const loginUser = await UserModel.findOne({
+            where: {
+                email: email
+            }
+        })
+
+        if (loginUser) {
+            if (loginUser.password === password) {
+                res.status(200).json({
+                    user: loginUser,
+                    message: "User successfully logged in"
+                })
+            } else {
+                res.status(401).json({
+                    message: "Incorrect password"
+                })
+            }
+        } else {
+            res.status(404).json({
+                message: "Email address not found"
+            })
+        }
+    } catch (error) {
+        console.log(error)
+        res.status(500).json({
+            message: "Failed to log user in"
+        })
+    }
+})
+
 
 module.exports = router
