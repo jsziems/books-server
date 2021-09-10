@@ -5,6 +5,8 @@ const { UserModel } = require('../models')
 
 const { UniqueConstraintError } = require("sequelize/lib/errors")
 const { sequelize } = require("../models/userModel")
+const jwt = require("jsonwebtoken")
+const bcrypt = require("bcryptjs")
 
 router.post("/signup", async (req, res) => {
     console.log("in router.post for signup")
@@ -22,7 +24,6 @@ router.post("/signup", async (req, res) => {
         res.status(201).json({
             message: "User successfully signed up",
             user: newUser,
-
         })
     } catch (error) {
         if (error instanceof UniqueConstraintError) {
@@ -47,9 +48,7 @@ router.post("/login", async (req, res) => {
 
     try {
         const loginUser = await UserModel.findOne({
-            where: {
-                email: email
-            }
+            where: { email: email }
         })
 
         if (loginUser) {
