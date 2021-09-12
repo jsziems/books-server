@@ -12,6 +12,7 @@ app.use(express.json())
 app.use(require('./middleware/headers'))
 
 app.use("/user", controllers.userController)
+// app.use(require("./middleware/validate-jwt"))
 app.use("/book", controllers.bookController)
 
 ; (async () => {

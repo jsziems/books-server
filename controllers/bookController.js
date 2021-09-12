@@ -1,38 +1,27 @@
-const router = require("express").Router()
+const express = require("express")
+const router = express.Router()
+let validateJWT = require("../middleware/validate-jwt")
 
 const { BookModel, UserModel } = require('../models')
 
 const { sequelize } = require("../models/bookModel")
 
-router.post("/create", async (req, res) => {
+router.post("/create", validateJWT, async (req, res) => {
     try {
-        let u = await UserModel.findOne({ where: { id: req.body.id } })
+        // QUESTION:  Instead of including the userId in the body, should I be able to access it via req.user?
 
-        if (u) {
-            // Valid user... add the book
-            // let newBook = await BookModel.create({
-            //     title: req.body.title,
-            //     author: req.body.author,
-            //     userId: req.body.id
-            // })
+        let newBook = await BookModel.create({
+            title: req.body.title,
+            author: req.body.author,
+            readStatus: 'In reading queue',
+            userId: req.body.userId
+        })
 
-            let newBook = await BookModel.create({
-                title: req.body.title,
-                author: req.body.author,
-                readStatus: 'In reading queue'
-            })
-            await u.addBook(newBook)
+        res.status(201).json({
+            message: "Book successfully added",
+            book: newBook
+        })
 
-            res.status(201).json({
-                message: "Book successfully added",
-                book: newBook
-            })
-    
-        } else {
-            res.status(401).json ({
-                message: "Can't add book -- user does not exist"
-            })
-        }
     } catch (error) {
         console.log(error)
         res.status(500).json({
@@ -42,40 +31,55 @@ router.post("/create", async (req, res) => {
     }
 })
 
-// Get all books for a user
-router.get("/:id", async (req, res) => {
-    try {
-        let allBooks = await BookModel.findAll({ 
-            where: { userId: req.params.id } })
 
-        res.status(201).json({ allBooks })
-    } catch (error) {
-        console.log(error)
-        res.status(500).json({
-            error: "Failed to get books",
-            message: error
+router.get("/:userId", validateJWT, async (req, res) => {
+    console.log(req.params.userId)
+    try {
+        const myBooks = await BookModel.findAll({
+            where: {
+                userId: req.params.userId
+            }
         })
+        res.status(200).json(myBooks)
+    } catch (err) {
+        console.log(err)
+        res.status(500).json({ error: err })
     }
 })
 
-router.put("/:id"), async (req, res) => {
-    console.log('in PUT router for book')
+router.get("/bookId/:bookId", validateJWT, async (req, res) => {
+    console.log(req.params.bookId)
+    try {
+        const myBook = await BookModel.findOne({
+            where: {
+                id: req.params.bookId
+            }
+        })
+        res.status(200).json(myBook)
+    } catch (err) {
+        console.log(err)
+        res.status(500).json({ error: err })
+    }
+})
+
+
+router.put("/:bookId", validateJWT, async (req, res) => {
+    console.log(req.params.bookId)
+
     const { title, author } = req.body
     const query = {
-        where: { id : req.params.id } 
+        where: { id: req.params.bookId }
     }
     const updBook = {
         title,
         author
     }
-    console.log(`id is ${req.params.id}`)
-    console.log(`query is ${query}`)
-    console.log(`updBook is ${updBook}`)
+
     try {
         let upd = await BookModel.update(updBook, query)
         if (upd[0] === 1) {
             res.status(201).json({
-                message: `Book Id ${req.params.id} updated`, updBook
+                message: `Book Id ${req.params.bookId} updated`, updBook
             })
         } else {
             console.log(`upd not successful: ${upd}, ${updBook}, ${query}`)
@@ -87,6 +91,24 @@ router.put("/:id"), async (req, res) => {
             message: error
         })
     }
-}
+})
+
+
+
+// QUESTION: use req.user???
+// router.get("/", validateJWT, async (req, res) => {
+//     const { uid } = req.user
+//     console.log(uid)
+//     try {
+//         const myBooks = await BookModel.findAll({
+//             where: {
+//                 userId: uid
+//             }
+//         })
+//         res.status(200).json(myBooks)
+//     } catch (err) {
+//         res.status(500).json({ error: err })
+//     }
+// })
 
 module.exports = router

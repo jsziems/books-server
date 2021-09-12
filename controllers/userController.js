@@ -9,7 +9,6 @@ const jwt = require("jsonwebtoken")
 const bcrypt = require("bcryptjs")
 
 router.post("/signup", async (req, res) => {
-    console.log("in router.post for signup")
 
     let { email, password, firstName, lastName } = req.body
 
@@ -21,10 +20,13 @@ router.post("/signup", async (req, res) => {
             lastName
         })
 
+        let token = jwt.sign({ id: newUser.id }, process.env.JWT_SECRET, { expiresIn: 60 * 60 * 24 })
         res.status(201).json({
             message: "User successfully signed up",
             user: newUser,
-        })
+            sessionToken: token
+        })     
+
     } catch (error) {
         if (error instanceof UniqueConstraintError) {
             console.log(error)
@@ -42,7 +44,6 @@ router.post("/signup", async (req, res) => {
 });
 
 router.post("/login", async (req, res) => {
-    console.log("in router.post for login")
 
     let { email, password } = req.body
 
@@ -53,9 +54,11 @@ router.post("/login", async (req, res) => {
 
         if (loginUser) {
             if (loginUser.password === password) {
+                let token = jwt.sign({ id: loginUser.id }, process.env.JWT_SECRET, {expiresIn: 60 * 60 * 24 })
                 res.status(200).json({
                     user: loginUser,
-                    message: "User successfully logged in"
+                    message: "User successfully logged in",
+                    sessionToken: token
                 })
             } else {
                 res.status(401).json({
