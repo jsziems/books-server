@@ -4,16 +4,21 @@ const db = require('../db')
 // ToDo:  Add constraints
 const User = db.define("user", {
     email: {
-        type: DataTypes.STRING
+        type: DataTypes.STRING(100),
+        allowNull: false,
+        unique: true,
     },
     password: {
-        type: DataTypes.STRING
+        type: DataTypes.STRING,
+        allowNull: false,
     },
     firstName: {
-        type: DataTypes.STRING
+        type: DataTypes.STRING,
+        allowNull: true
     },
     lastName: {
-        type: DataTypes.STRING
+        type: DataTypes.STRING, 
+        allowNull: true
     }
 })
 

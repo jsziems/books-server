@@ -8,6 +8,27 @@ const { sequelize } = require("../models/userModel")
 const jwt = require("jsonwebtoken")
 const bcrypt = require("bcryptjs")
 
+
+// 
+// Get a user with user.id as the input parameter
+// 
+router.get("/:userId", async (req, res) => {
+    try {
+        const myUser = await UserModel.findOne({
+            where: {
+                id: req.params.userId
+            }
+        })
+        res.status(200).json(myUser)
+    } catch (err) {
+        console.log(err)
+        res.status(500).json({ error: err })
+    }
+})
+
+// 
+// Add a user to the system.  Email, password, and supporting fields are provided in the body,
+// 
 router.post("/signup", async (req, res) => {
 
     let { email, password, firstName, lastName } = req.body
@@ -15,7 +36,7 @@ router.post("/signup", async (req, res) => {
     try {
         const newUser = await UserModel.create({
             email,
-            password,
+            password : bcrypt.hashSync(password, 13),
             firstName,
             lastName
         })
@@ -43,6 +64,9 @@ router.post("/signup", async (req, res) => {
     }
 });
 
+// 
+// Login and generate a token.  Email and password are provided in the body.
+// 
 router.post("/login", async (req, res) => {
 
     let { email, password } = req.body
@@ -53,7 +77,8 @@ router.post("/login", async (req, res) => {
         })
 
         if (loginUser) {
-            if (loginUser.password === password) {
+            let pwComparison = await bcrypt.compare(password, loginUser.password)
+            if (pwComparison) {
                 let token = jwt.sign({ id: loginUser.id }, process.env.JWT_SECRET, {expiresIn: 60 * 60 * 24 })
                 res.status(200).json({
                     user: loginUser,
@@ -78,5 +103,31 @@ router.post("/login", async (req, res) => {
     }
 })
 
+// 
+// Delete a user with user.id as the input parameter
+// 
+router.delete("/:userId", async (req, res) => {
+    const userId = req.params.userId
+    const query = {
+        where: {
+            id: userId
+        }
+    }
+    
+    try {
+        let userRemoved = await UserModel.destroy(query)
+        if (userRemoved) {
+            res.status(200).json({
+                message: `User ${userId} has been removed`
+            })
+        } else {
+            res.status(404).json({
+                message: 'User not removed'
+            })
+        }
+    } catch (err) {
+        res.status(500).json({ error: err })
+    }
+})
 
 module.exports = router
