@@ -18,7 +18,7 @@ const Book = db.define("book", {
         allowNull: true,
         unique: false
     },
-    genre: {
+    topic: {
         type: DataTypes.STRING,
         allowNull: true,
         unique: false

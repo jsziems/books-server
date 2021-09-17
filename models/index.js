@@ -4,12 +4,11 @@ const { DataTypes } = require('sequelize')
 const UserModel = require('./userModel')
 const BookModel = require('./bookModel')
 
-UserModel.hasMany(BookModel)
-// BookModel.belongsTo(UserModel)
-BookModel.belongsTo(UserModel, {
+UserModel.hasMany(BookModel, {
     onDelete: 'CASCADE',
     hooks: true
 })
+BookModel.belongsTo(UserModel)
 
 module.exports = {
     UserModel,

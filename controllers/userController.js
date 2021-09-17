@@ -8,6 +8,8 @@ const { sequelize } = require("../models/userModel")
 const jwt = require("jsonwebtoken")
 const bcrypt = require("bcryptjs")
 
+// =============== TO DO ===============
+// - Implement Admin Role
 
 // 
 // Get a user with user.id as the input parameter
@@ -33,12 +35,15 @@ router.post("/signup", async (req, res) => {
 
     let { email, password, firstName, lastName } = req.body
 
+    // =============== TO DO ===============
+    // - Handle Admin Role
     try {
         const newUser = await UserModel.create({
             email,
             password : bcrypt.hashSync(password, 13),
             firstName,
-            lastName
+            lastName,
+            adminRole: false
         })
 
         let token = jwt.sign({ id: newUser.id }, process.env.JWT_SECRET, { expiresIn: 60 * 60 * 24 })
@@ -71,6 +76,8 @@ router.post("/login", async (req, res) => {
 
     let { email, password } = req.body
 
+    // =============== TO DO ===============
+    // - Handle Admin Role
     try {
         const loginUser = await UserModel.findOne({
             where: { email: email }
@@ -114,6 +121,8 @@ router.delete("/:userId", async (req, res) => {
         }
     }
     
+    // =============== TO DO ===============
+    // - Handle Admin Role
     try {
         let userRemoved = await UserModel.destroy(query)
         if (userRemoved) {

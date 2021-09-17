@@ -19,6 +19,10 @@ const User = db.define("user", {
     lastName: {
         type: DataTypes.STRING, 
         allowNull: true
+    },
+    adminRole: {
+        type: DataTypes.BOOLEAN,
+        allowNull: false
     }
 })
 
