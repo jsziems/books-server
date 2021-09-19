@@ -19,7 +19,13 @@ router.post("/create", validateJWT, async (req, res) => {
             let book = await u.createBook({
                 title: req.body.title,
                 author: req.body.author,
-                readStatus: 'In reading queue',
+                link: req.body.link,
+                topic: req.body.topic,
+                media: req.body.media,
+                readStatus: req.body.readStatus,
+                summary: req.body.summary,
+                rating: req.body.rating,
+                readStatus: req.body.readStatus
             })
     
             res.status(201).json({
