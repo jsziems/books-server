@@ -28,6 +28,19 @@ router.get("/:userId", async (req, res) => {
     }
 })
 
+//
+// Get all users
+// 
+router.get("/", async (req, res) => {
+    try {
+        const allUsers = await UserModel.findAll()
+        res.status(200).json(allUsers)
+    } catch (err) {
+        console.log(err)
+        res.status(500).json({ error: err })
+    }
+})
+
 // 
 // Add a user to the system.  Email, password, and supporting fields are provided in the body,
 // 
