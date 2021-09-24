@@ -1,5 +1,6 @@
 
 const router = require("express").Router()
+let validateJWT = require("../middleware/validate-jwt")
 
 const { UserModel } = require('../models')
 
@@ -53,7 +54,7 @@ router.post("/signup", async (req, res) => {
     try {
         const newUser = await UserModel.create({
             email,
-            password : bcrypt.hashSync(password, 13),
+            password: bcrypt.hashSync(password, 13),
             firstName,
             lastName,
             adminRole: false
@@ -64,7 +65,7 @@ router.post("/signup", async (req, res) => {
             message: "User successfully signed up",
             user: newUser,
             sessionToken: token
-        })     
+        })
 
     } catch (error) {
         if (error instanceof UniqueConstraintError) {
@@ -99,7 +100,7 @@ router.post("/login", async (req, res) => {
         if (loginUser) {
             let pwComparison = await bcrypt.compare(password, loginUser.password)
             if (pwComparison) {
-                let token = jwt.sign({ id: loginUser.id }, process.env.JWT_SECRET, {expiresIn: 60 * 60 * 24 })
+                let token = jwt.sign({ id: loginUser.id }, process.env.JWT_SECRET, { expiresIn: 60 * 60 * 24 })
                 res.status(200).json({
                     user: loginUser,
                     message: "User successfully logged in",
@@ -123,6 +124,43 @@ router.post("/login", async (req, res) => {
     }
 })
 
+
+//
+// Update a user with user.id as the input parameter
+//
+router.put("/:userId", validateJWT, async (req, res) => {
+    const { email, firstName, lastName, adminRole } = req.body
+    const query = {
+        where: { id: req.params.userId }
+    }
+    const updUser = {
+        email,
+        firstName,
+        lastName,
+        adminRole
+    }
+
+    try {
+        let upd = await UserModel.update(updUser, query)
+        if (upd[0] === 1) {
+            res.status(201).json({
+                message: `User Id ${req.params.userId} updated`, updUser
+            })
+        } else {
+            console.log(`Update not successful: ${upd}, ${updUser}, ${query}`)
+        }
+    } catch (error) {
+        console.log(`ERROR:  ${error}`)
+        res.status(500).json({
+            error: "Failed to update user",
+            message: error
+        })
+    }
+})
+
+
+
+
 // 
 // Delete a user with user.id as the input parameter
 // 
@@ -133,7 +171,7 @@ router.delete("/:userId", async (req, res) => {
             id: userId
         }
     }
-    
+
     // =============== TO DO ===============
     // - Handle Admin Role
     try {
