@@ -57,14 +57,15 @@ router.post("/signup", async (req, res) => {
             password: bcrypt.hashSync(password, 13),
             firstName,
             lastName,
-            adminRole: false
+            adminRole: 'None'
         })
 
         let token = jwt.sign({ id: newUser.id }, process.env.JWT_SECRET, { expiresIn: 60 * 60 * 24 })
         res.status(201).json({
             message: "User successfully signed up",
             user: newUser,
-            sessionToken: token
+            sessionToken: token,
+            adminRole: newUser.adminRole
         })
 
     } catch (error) {
@@ -104,7 +105,8 @@ router.post("/login", async (req, res) => {
                 res.status(200).json({
                     user: loginUser,
                     message: "User successfully logged in",
-                    sessionToken: token
+                    sessionToken: token,
+                    adminRole: loginUser.adminRole
                 })
             } else {
                 res.status(401).json({
