@@ -27,7 +27,7 @@ router.post("/create", validateJWT, async (req, res) => {
                 rating: req.body.rating,
                 readStatus: req.body.readStatus
             })
-    
+
             res.status(201).json({
                 message: "Book successfully added",
                 book: book
@@ -52,7 +52,7 @@ router.post("/create", validateJWT, async (req, res) => {
 // 
 router.get("/", validateJWT, async (req, res) => {
     try {
-        let u = await UserModel.findOne({ where: { id: req.user.id }})
+        let u = await UserModel.findOne({ where: { id: req.user.id } })
         if (u) {
             const myBooks = await u.getBooks()
             res.status(200).json(myBooks)
@@ -94,7 +94,14 @@ router.put("/:bookId", validateJWT, async (req, res) => {
     }
     const updBook = {
         title,
-        author
+        author,
+        link: req.body.link,
+        topic: req.body.topic,
+        media: req.body.media,
+        readStatus: req.body.readStatus,
+        summary: req.body.summary,
+        rating: req.body.rating,
+        readStatus: req.body.readStatus
     }
 
     try {
