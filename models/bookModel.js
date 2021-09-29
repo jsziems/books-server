@@ -39,7 +39,7 @@ const Book = db.define("book", {
         unique: false
     },
     rating: {
-        type: DataTypes.INTEGER,
+        type: DataTypes.STRING,
         allowNull: true,
         unique: false
     }

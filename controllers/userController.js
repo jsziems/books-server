@@ -47,7 +47,7 @@ router.get("/", async (req, res) => {
 // 
 router.post("/signup", async (req, res) => {
 
-    let { email, password, firstName, lastName } = req.body
+    let { email, password, firstName, lastName, adminRole } = req.body
 
     // =============== TO DO ===============
     // - Handle Admin Role
@@ -57,7 +57,7 @@ router.post("/signup", async (req, res) => {
             password: bcrypt.hashSync(password, 13),
             firstName,
             lastName,
-            adminRole: 'None'
+            adminRole
         })
 
         let token = jwt.sign({ id: newUser.id }, process.env.JWT_SECRET, { expiresIn: 60 * 60 * 24 })
