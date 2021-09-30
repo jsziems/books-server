@@ -15,7 +15,7 @@ This app is the final project for a 6-month web development course through Eleve
 * Node
 * API endpoints
 
-## Running the server
+## Downloading and running the server
 
 1. Download the code from the repository
 2. run <code>npm install</code>
