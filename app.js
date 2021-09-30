@@ -27,10 +27,3 @@ app.listen(process.env.PORT, () => {
 })
 
 
-//     REFERENCES
-// Set up Sequelize:  https://sequelize.org/master/manual/getting-started.html
-// Create an .env file: https://www.npmjs.com/package/dotenv
-// Define the db model:  https://sequelize.org/master/manual/model-basics.html
-// Define db associations:  https://sequelize.org/master/manual/assocs.html
-// Setup routing:  https://expressjs.com/en/guide/routing.html
-

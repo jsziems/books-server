@@ -9,9 +9,6 @@ const { sequelize } = require("../models/userModel")
 const jwt = require("jsonwebtoken")
 const bcrypt = require("bcryptjs")
 
-// =============== TO DO ===============
-// - Implement Admin Role
-
 // 
 // Get a user with user.id as the input parameter
 // 
@@ -49,8 +46,6 @@ router.post("/signup", async (req, res) => {
 
     let { email, password, firstName, lastName, adminRole } = req.body
 
-    // =============== TO DO ===============
-    // - Handle Admin Role
     try {
         const newUser = await UserModel.create({
             email,
@@ -91,8 +86,6 @@ router.post("/login", async (req, res) => {
 
     let { email, password } = req.body
 
-    // =============== TO DO ===============
-    // - Handle Admin Role
     try {
         const loginUser = await UserModel.findOne({
             where: { email: email }
@@ -125,7 +118,6 @@ router.post("/login", async (req, res) => {
         })
     }
 })
-
 
 //
 // Update a user with user.id as the input parameter
@@ -160,9 +152,6 @@ router.put("/:userId", validateJWT, async (req, res) => {
     }
 })
 
-
-
-
 // 
 // Delete a user with user.id as the input parameter
 // 
@@ -174,8 +163,6 @@ router.delete("/:userId", async (req, res) => {
         }
     }
 
-    // =============== TO DO ===============
-    // - Handle Admin Role
     try {
         let userRemoved = await UserModel.destroy(query)
         if (userRemoved) {

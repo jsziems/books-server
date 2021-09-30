@@ -13,7 +13,6 @@ const User = require("../models/userModel")
 router.post("/create", validateJWT, async (req, res) => {
     try {
         let u = await UserModel.findOne({ where: { id: req.user.id } })
-        console.log(u)
 
         if (u) {
             let book = await u.createBook({

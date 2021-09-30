@@ -1,7 +1,6 @@
 const { DataTypes } = require('sequelize');
 const db = require('../db')
 
-// ToDo:  Add constraints
 const Book = db.define("book", {
     title: {
         type: DataTypes.STRING,
